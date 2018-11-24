@@ -1,0 +1,271 @@
+<C/C++>
+	<linkerror>
+		查看lib文件包含
+	</linkerror>		
+</C>
+
+<linux,ubuntu>
+	<command,查看显卡型号>
+	lspci | grep -i nvidia
+	sudo dpkg --list | grep nvidia-*
+	</command,查看显卡型号>
+	<tgz,压缩和解压文件>
+	1 将tgz文件解压到指定目录
+	tar   zxvf    test.tgz  -C  指定目录
+	比如：tar  zxvf  /source/kernel.tgz  -C /source/ linux-2.6.29
+	2 将指定目录压缩到指定文件
+	tar czvf   kernel.tgz   linux-2.6.29
+	</tgz,解压文件>
+</linux,ubuntu>
+
+<git,github>
+	<error,报错>
+	git pull报错：	refusing to merge unrelated histories
+	</error,报错>
+	<ssh,创建秘钥>
+	instruction:ssh-keygen -t rsa -C 924925465@qq.com
+	秘钥路径：C:\Users\Administrator\.ssh
+	</ssh,创建秘钥>
+	<git,windows下Git基本操作>
+		返回上一级目录：cd ..
+		查看当前目录：pwd
+		创建文件：vi readme.txt(i:编辑模式，esc：命令模式；命令模式下q:退出编辑，q!：强制退出编辑，x:退出编辑并保存)
+	</git,windows下Git基本操作>
+	<git,删除本地仓库>
+		先rm -rf xxx.git 
+		再rm -rf xxx
+	</git,删除本地仓库>
+	</git,删除本地仓库>
+</git,github>
+
+<math>
+	<math,truncated normal distribution>
+	normal distribution 是正太分布，truncated normal distribution成为截断正太分布，样本取值有上下限
+	</math,truncated>
+	<math,向量方差,协方差矩阵>
+	随机向量对应随机变量方差的数字特征应是协方差阵：D(X)=E{[X-E(X)][X-E(X)]'}
+	其中E(X)为向量均值等于向量每个分量的均值,X-E(X)就是分量减去各自分量的均值,[X-E(X)]'表示转置即行向量.对角线上元素对应的是每个分量的方差,如果各个分量独立的话,D(X)是对角阵.你说的向量的方差应就是它.
+	</math,向量方差>
+	<math,softmax函数>
+	归一化指数函数，是逻辑函数的一种推广。Softmax函数实际上是有限项离散概率分布的梯度对数归一化
+	它能将一个含任意实数的K维向量  “压缩”到另一个K维实向量  中，使得每一个元素的范围都在  之间，并且所有元素的和为1。
+	</math,softmax函数>
+	<math,one-hot vector>
+	类似一组指示灯，一次只能亮一个，即向量里面只有一个元素为1，其余为0
+	</math,softmax函数>
+</math>
+
+<key:anaconda,指令>
+	<normal instuction>
+		conda list			#列出已安装包
+		conda upgrade --all  #更新所有包
+		conda install package_name #安装指定包
+		conda install pandas numpy 	#install simultaneously
+		conda isntall numpy=1.10 	#install specified version
+		conda remove package_name		#uninstall package
+		conda upgrade package_name		#upgrade
+		conda update package_name/--all	#update specified package
+		conda search term				#fuzzy search without specific name
+		ubuntu16.04启动Anaconda Navigator 图形化界面：anaconda-navigator
+	</normal>
+	<environment>
+		<create env>
+			conda create -n env_name package_names	#eg:conda create -n py3 pandas,then you get 										#a dir named py3 with pandas intalled in it
+											#more: conda create -n py3 python=3
+											#conda create -n py2 python=2
+			conda create -n BBB --clone  	#克隆环境
+									
+			conda info --envs		//列出环境
+		</create>
+		<active env>
+			activate my_env							#activate specific environment
+			conda list								#list packages under the env
+			conda install package_name 				#install specific package under  									     #the env
+		</active>
+		<leave env>
+			deactivate
+		</leave>
+	</environment>
+	<tensorflow install>
+		pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/windows/gpu/tensorflow_gpu-1.0.1-cp35-cp35m-win_amd64.whl
+		Tsinghua mirror: pip install --ignore-installed --upgrade https://mirrors.tuna.tsinghua.edu.cn/tensorflow/windows/gpu/tensorflow_gpu-1.0.1-cp35-cp35m-win_amd64.whl
+		Tsinghua mirror: conda install https://mirrors.tuna.tsinghua.edu.cn/tensorflow/windows/gpu/tensorflow_gpu-1.0.1-cp35-cp35m-win_amd64.whl
+		//使用清华镜像安装TensorFlow
+			pip install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow-gpu
+			pip install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow
+		<note,tensorflow,mnist>
+		ReLU:一种神经元激活函数，称为线性整流函数，可表示为y=max(0,x)
+		</note>
+		<tensorflow,reduce_mean>
+			tf.reduce_mean(x)		#所有元素求均值
+			tf.reduce_mean(x,0)		#压缩行，按列求均值
+			tf.reduce_mean(x,1)		#压缩列，按行求均值
+		</tensorflow,reduce_mean>
+	</tensorflow>
+
+</key:anaconda,指令>
+
+<python>
+	<numpy>
+		tolist			将numpy数组转换为Python列表的函数
+		copy			复制numpy数组元素的函数
+		ones，zeros		创建用1或0填充的数组的函数
+		zeros_like,ones_like	该函数用来创建与作为参数的列表形状相同的二维数组
+		fill			将数组元素替换为某一特定元素的函数
+		identity		创建单位矩阵的函数
+		eye				该函数用来创建第K条对角线上元素为1的对角矩阵
+		vstack,hstack	将数组合并为二维数组的函数
+		"random子模块：random、permutation，normal，rand、multivariate_normal等"   从某种分布抽取元素，创建数组
+	</numpy>
+	<python, 字符串操作>
+		文件移动剪切
+		import os,shutil
+		shutil.move(src,dst)
+
+		字符串两端去空格或指定字符
+		str.strip()
+		str.lstrip()
+		str.rstrip("/")
+		<batch,批处理指令>
+			批处理,删除文件夹和文件
+			RD/S/Q dir1,dir2,dir3
+		</batch,批处理指令>
+
+		日期格式与字符串互转
+		1.先导入库：import datetime
+		2.获取当前日期和时间：now_time = datetime.datetime.now()
+		3.格式化成我们想要的日期：strftime（）
+		比如：“2016-09-21”：datetime.datetime.now().strftime('%Y-%m-%d')
+	</python,字符串操作>
+	<datatype,dictionary>
+		创建字典：	d={key1:value1,key2:value2}
+		列出字典的key： dict.keys()
+		访问字典：    value = dict['key'], value = dict.get(key)
+	</datatype,dictionary>
+	<python,同时安装python2和python3>
+		[key:python,同时按照Python2和python3时PIP的使用]
+		假如安装完之后pip2能用，pip3不能用，
+		则在cmd输入以下指令(前提是已经修改为python3.exe)
+		python3 -m pip install --upgrade pip --force-reinstall
+		之后用pip -V 查看是否安装成功
+	</python,同时安装python2和python3>
+	<python,tensorflow,accuracy.eval>
+	eval() 其实就是tf.Tensor的Session.run() 的另外一种写法。你上面些的那个代码例子，如果稍微修改一下，加上一个Session context manager：
+	with tf.Session() as sess:
+ 	 print(accuracy.eval({x:mnist.test.images,y_: mnist.test.labels}))
+  	with tf.Session() as sess:
+ 	 print(sess.run(accuracy, {x:mnist.test.images,y_: mnist.test.labels}))
+	</python,tensorflow,accuracy.eval>
+	<python,mumpy,initialize,初始化>
+	np.zeros(10,dtype=int)			#创建一个长度为10的数组，初值为0
+	np.ones((3,5),dtype=float)		#创建一个3X5的浮点型数组，初值为1
+	np.full((3,5),3,14)				#创建一个3X5的浮点型数组，初值为3.14
+	np.arange(0,20,2)				#创建一个3x5的浮点型数组，数组的值是一个线性系列，从0开始，到20结束，步长为2
+	np.linsapace(0,1,5)				#创建一个5个元素的数组，这5个数均匀的分配到0~1
+	np.random.random(3,3)			#创建一个3x3的，在0～1均匀分配的随机数组成的数组
+	np.random.normal(0,1,(3,3))		#创建一个3x3的，均值为0，方差为1,正太分布的随即数数组
+	np.random.randint(0,10,(3,3))	#创建一个3x3的，[0,10]区间的随机整形数组
+	np.eye(3)						#创建一个3x3的单位矩阵
+	np.empty(3)						创建一个由3个整形数组组成的未初始化的数组,数组的值是内存空间中的任意值
+	</python,mumpy,initialize,初始化>
+	<python,mumpy,shape>
+		num = a.shape[0]				#获取数组第一维信息，即行数
+		num = a.shape[1]				#获取数组第二维信息，即列数
+		nrow,ncol = a.shape[:2]			#获取数组二维信息，即行数和列数
+	</python,mumpy,shape>
+	<python,reshape,行向量>
+		对numpy来说，一维行向量转置输出后还是一维行向量，可通过下面三种方式转置
+		a=a.reshape(-1,1)				#
+		aT=a[:,None]					#
+		a2=np.array(a), print(a2.T)		#先构造二维数组，然后再转置
+	</python,reshape,行向量>
+	<python,mumpy,dot>
+		a = np.array([[1,1],[1,1]])
+		b = np.array([[1,0],[0,1]])
+		np.dot(a,b)						#？？？
+		a*b 							#？？
+	</python,mumpy,dot>
+
+		no name python in module tensorflow
+		
+	</error,tensorflow,python>
+	<read file,save file>
+		def readFile(path):
+			with open(path,'r',errors='ignore') as file:	#filter problem in text with errors
+			content = file.read()
+			return content
+
+		def saveFile(path,result):
+			with open(path,'w',errors='ignore') as file:	#filter problem in text with errors
+			content = file.write(result)
+
+		def myPrint(content):
+			strTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+			print(strTime+"->"+content)
+	</read>
+	<traverse,遍历文件夹中所有子文件夹和文件>
+		def traverse(path):
+			dirLst=os.listdir(path)
+			for eachFile in dirLst:
+			  subDir=os.path.join(path,eachFile)
+			  if os.path.isdir(subDir):
+			      traverse(subDir)
+			  else:
+			      partion=os.path.splitext(eachFile)
+			      newname=partion[0]+".txt"
+			      newname=os.path.join(path,newname)
+			      os.rename(subDir,newname)
+			      print(eachFile)
+	</traverse,遍历文件夹中所有子文件夹和文件>
+	<urllib,python>
+		urllib提供了一系列用于操作URL的功能
+	</urllib,python>
+	<input_data,mnist,python>
+		#encoding=utf-8
+		import input_data
+		input_data.read_data_sets("E:\cuiyue\T_MachineLearning/ds/",one_hot=True)
+	</input_data,mnist,python>	
+
+</python>
+	
+<tensorflow>
+	<cross entropy>
+		序号		事件		概率p	信息量I
+		A	电脑正常开机	0.7	-log(p(A))=0.36
+		B	电脑无法开机	0.2	-log(p(B))=1.61
+		C	电脑爆炸了	0.1	-log(p(C))=2.30
+		用熵来定义所有信息量的期望
+		H(X) = −∑p(xi)log(p(xi))
+	</cross entropy>
+	<error,tensorflow>
+		警告：Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+		solution:1.在代码中加入如下代码，忽略警告： 
+		import os 
+		os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+	</error,tensorflow>
+	<error,tensorflow>
+		NameError: name 'mnist' is not defined
+		solution:
+		from tensorflow.examples.tutorials.mnist import input_data
+		mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
+	</error,tensorflow>
+</tensorflow>
+
+<neuralnetwork>
+	<neuralnetwork, 神经元>
+		y = f(sum(wi*xi - theta))		#wi:weight, xi:input, theta:threshold
+		y = 1/(1+exp(-x))				#光滑后的神经元模型
+	</neuralnetwork,>
+	<error BackPropagation,BP algorithm>
+		　所谓神经网络的训练或者是学习，其主要目的在于通过学习算法得到神经网络解决指定问题所需的参数，这里的参数包括各层神经元之间的连接权重以及偏置等
+	</error>
+</neuralnetwork>
+
+
+
+
+
+
+
+
+
