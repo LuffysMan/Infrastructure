@@ -1,8 +1,13 @@
 <C/C++>
 	<linkerror>
 		查看lib文件包含
-	</linkerror>		
-</C>
+	</linkerror>	
+	<commonfunc,常用方法>
+	判断数据运算溢出导致结果 is not a number 
+	bool isnan();
+
+	</commonfunc,常用方法>	
+</C/C++>
 
 <linux,ubuntu>
 	<command,查看显卡型号>
@@ -106,6 +111,36 @@
 </key:anaconda,指令>
 
 <python>
+	<python_pandas>
+		<operation,基本操作>
+		# -*- coding: utf-8 -*-
+		
+		data = pandas.read_csv('test.csv')	#读csv文件
+		first_rows = data.head(n=5)	#返回前n行
+		cols = data.columns 		#返回全部列名
+		dimensision = data.shape 	#返回维度
+		# print data.values 		#返回所有数据 numpy格式
+		# print data.dtypes 		#返回每一列数据类型
+		# print data.loc[1] 		#返回指定行数据
+		# print data.loc[:,['disease']] #返回制定行制定类数据
+		df.dropna(how = 'any') 		#去掉有缺失值的行
+		df.fillna(values = 'null') 	#对缺失值进行填充
+		</operation,基本操作>
+		<error,读CSV报错>
+		错误：Unable to open parsers.pys:File not found
+		原因：csv文件路径含有中文或者csv内容里面有中文字符，
+		解决方案1：中文字符全部改为英文字符即可
+		解决方案1：
+			Python2里面：
+			# -*- coding: utf-8 -*-			#此句写在py文件第一行
+			mydata = pd.read_csv(u"例子.csv")   #前面加u，第一行的编码必须utf-8
+			python3里面：
+			# -*- coding: utf-8 -*-			#此句写在py文件第一行
+			mydata = pd.read_csv(u"例子.csv",encoding = "gbk")
+			mydata = pd.read_csv(u"例子.csv",encoding = "gb2312")  
+			mydata = pd.read_csv(u"例子.csv",encoding = "gb18030")
+		</error,读CSV报错>
+	</python_pandas>
 	<numpy>
 		tolist			将numpy数组转换为Python列表的函数
 		copy			复制numpy数组元素的函数
@@ -116,6 +151,12 @@
 		eye				该函数用来创建第K条对角线上元素为1的对角矩阵
 		vstack,hstack	将数组合并为二维数组的函数
 		"random子模块：random、permutation，normal，rand、multivariate_normal等"   从某种分布抽取元素，创建数组
+		#数组连接操作
+			arr1= np.array([[11,12],[32,42]], float)
+			arr2= np.array([[54,26],[27,28]], float)
+			arr = np.concatenate((arr1, arr2)) #默认按第一维度连接
+			arr = np.concatenate((arr1, arr2), axis=0)
+			arr = np.concatenate((arr1, arr2), axis=1) #按第二维度进行连接
 	</numpy>
 	<python, 字符串操作>
 		文件移动剪切
