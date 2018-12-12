@@ -1,4 +1,21 @@
 <C/C++>
+	<include,常用头文件>
+	
+	</include,常用头文件>
+	<C/C++,linux>
+	1.g++编译
+		g++ -c file.cpp 
+		-c 是compile的意思，生成file.o文件 
+	2.g++链接 
+		g++ file1.o file2.o -o program.exe 
+		-o 是指定生成的可执行文件名称，若不给出，默认名称为a.out 
+	3.编译+链接
+		g++ file1.cpp file2.cpp -o program.exe 
+		这等同于上面的两步结合
+	4.运行时需要给路径名称：如./a.out, 直接输入a.out不能运行
+
+
+	</C>
 	<linkerror>
 		查看lib文件包含
 	</linkerror>	
