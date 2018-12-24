@@ -1,7 +1,72 @@
+<OPENCV>
+	<Mat,初始化>
+		Mat msrc(32, 32, CV_8UC3, Scalar(0, 0, 0));	//32x32，8位无符号，3通道彩色图像，像素初始化为BGR(0,0,0)
+		预定义类型的结构:
+		关于预定义类型的说明
+			CV_<bit_depth>(S|U|F)C<number_of_channels>
+			其中,
+			(1) bit_depth---比特数---代表8bite\16bite\32bite\64bite
+			eg：8表示你所创建的储存图片的Mat对象中，每个像素点在内存空间所占的空间大小8bite。
+			(2) S|U|F
+			S: signed int，即有符号整型；
+			U: unsigned int，即无符号整型；
+			F: float，单精度浮点型。
+			(3) C<number_of_channels>：所存储的图片的通道数。
+			eg 1---grayImg灰度图像---是---单通道图像
+			2---RGB彩色图像---是---3通道图像
+			3---带Alpha通道的RGB彩色图像---是---4通道图像
+		</Mat,初始化>
+	<pixel,像素表示，颜色表示>
+	CvScalar是一个可以用来存放4个double数值的数组；一般用来存放像素值（不一定是灰度值哦）的，最多可以存放4个通道的。
+	typedef struct CvScalar
+	{
+		double val[4];
+	}CvScalar;
+	a) 存放单通道图像中像素：cvScalar(255);
+	b) 存放三通道图像中像素：cvScalar(255,255,255);
+	c)//只使用第一个通道，val[0]=val0;等同于cvScalar（val0,0,0,0）;
+	 inline CvScalar cvRealScalar( double val0 );
+	d)//所用通道值用同一个val0123赋值
+	 inline CvScalar cvScalarAll( double val0123 );
+	e)CV_RGB是OpenCV中的一个宏，用于创建一个色彩值：
+	 #define CV_RGB(r,g,b)  cvScalar((b),(g),(r),0)。
+	 看到转换为cvScalar时，rgb的顺序变为bgr，这是因为opencv中存储RGB模式彩图时，采用的通道顺序是BGR.
+	 举例：CvScalar color = CV_RGB( rand()&255, rand()&255, rand()&255 )
+	</pixel,像素表示，颜色表示>
+	<at,对单个像素访问和操作>
+	1.at操作(简单但效率较低)
+	对于灰度图读取和修改操作如下：
+		uchar pixel_value = Mat.at<uchar>(row, col);
+		Mat.at<uchar>(row, col) = pixel_value; 
+	对于RGB彩色图像而言：
+		Vec3b color_value = Mat.at<Vec3b>(row, col);
+		Mat.at<Vec3b>(row, col) = color_value;
+	2.ptr操作
+	ptr操作时通过指针偏移的方式进行像素的查找、遍历和修改的，因此效率相对较高。
+	对于灰度图的读取和修改操作如下：
+		uchar pixel_value = Mat.ptr<uchar>(row)[col];
+		Mat.ptr<uchar>(row)[col] = pixel_value; 
+	对于RGB彩色图像而言：
+		Vec3b color_value = Mat.ptr<Vec3b>(row)[col];
+		Mat.ptr<Vec3b>(row)[col] = color_value;
+	</at,对单个像素访问和操作>
+</OPENCV>
 <C/C++>
 	<include,常用头文件>
 	
 	</include,常用头文件>
+	<stack overflow,栈溢出>
+		以vs2017为例，windows栈大小默认为1M，超过1M就会报错提示栈溢出:stack overflow
+		举例：
+			1.新建windows console程序，在main函数里只定义一个字符数组 
+			char maxStack[1024][1024];
+			2.编译正常
+			3.链接运行，报错:exception unhandled, stack overflow parameter xxxxx
+			(实际上char maxStack[1024][1005]，可以正常运行)
+		栈溢出解决方案：
+			方案1.调整栈内变量内存分配，限制在1M内
+			方案2.调整程序栈大小，以vs为例，右键工程，转到properties->Linker->System->Stack Reserve Size，输入栈大小(以byte为单位)，比如16M，输入16777216即可
+	</stack>
 	<C/C++,linux>
 	1.g++编译
 		g++ -c file.cpp 
@@ -61,6 +126,10 @@
 </git,github>
 
 <math>
+	<symbol,数学符号>
+	λμνσξθηεδαβσρφχψωτ
+	£¥±ΦΨΩΓΔΛ∞
+	</symbol,拉丁字符>
 	<math,truncated normal distribution>
 	normal distribution 是正太分布，truncated normal distribution成为截断正太分布，样本取值有上下限
 	</math,truncated>
@@ -174,6 +243,11 @@
 			arr = np.concatenate((arr1, arr2)) #默认按第一维度连接
 			arr = np.concatenate((arr1, arr2), axis=0)
 			arr = np.concatenate((arr1, arr2), axis=1) #按第二维度进行连接
+		#对数组各维度进行切片操作
+		matrix[0:1,1:2] #
+		matrix[1,:] #只有:表本维度所有
+		matrix[:,2]
+		matrix[-1:, -2:] #-2表从本维度倒数第二个元素开始往后数
 	</numpy>
 	<python, 字符串操作>
 		文件移动剪切
