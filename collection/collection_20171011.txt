@@ -1,0 +1,918 @@
+2016/11/10	动态链接库调用
+方式一：KvBatchDev.dll
+如果是用loadlibrary(),GetProcAddress()，则不用添加lib库
+如果是用kvf_GetBatchScriptSevice()，获取全局对象指针的方法，则需要lib文件
+
+2016/11/24	PG数据库ExecuteSQL异常
+异常信息e.Description()
+Error1: 0x004ff094 "The # of binded parameters < the # of parameter markers"
+Error2: 0x00710b8c "错误: 语法错误 在 "." 或附近的;
+Error3: 0x0070dce4 "Could not send Query(connection dead);
+执行的sql语句
+Insert into Signature  (MessageDigest) 
+values (''竞蜯阆B2翯?秛h	B?')
+可能的错误原因:
+values后面的格式应该是('field value'),而不是('field'value')，当字段内容是通过算法校验出的字符串时，很有可能出现引号、括号等字符，
+这时候sql语句可能执行不成功
+
+2016/12/06	KM调试
+对应工程调试设置：
+Command：G:\sourcecode_kv75SP1\KM\Out\Debug\node.exe
+Command Arguements:kmwebdataserver.js
+Working Directory:G:\sourcecode_kv75SP1\KM\Out\Debug
+
+2016/12/28	模块资源分离相关代码，多语言组态	
+// 模块资源分离相关代码
+#include <Windows.h>
+extern BOOL WINAPI DllMain(HANDLE _HDllHandle, DWORD _Reason, LPVOID _Reserved)
+{
+	return TRUE;
+}
+
+// 切换资源
+AFX_MANAGE_STATE(AfxGetStaticModuleState());
+
+// 应用程序类实现cpp加入公共函数头文件
+#include "CommonFunc.h"
+
+// 重载函数
+virtual BOOL InitInstance();
+virtual int ExitInstance();
+
+// Initinstance中添加
+CWinApp::InitInstance();
+
+ELangType eLangType = GetKingviewLanguageType();
+CString strResDllPath = GetResDllPath(eLangType, 1);
+m_hInst = ::LoadLibrary(strResDllPath);
+if (m_hInst)
+{
+	AfxSetResourceHandle(m_hInst);
+}
+
+return TRUE; 
+
+// Exitinstance中添加
+if (m_hInst)
+{
+	FreeLibrary(m_hInst);
+	m_hInst = NULL;
+}
+
+return CWinApp::ExitInstance();
+
+
+2017/03/17	新建文件夹
+//{创建目录
+CString strTitle, strMsg ;
+strTitle.LoadString( IDS_TITLE_NEW_PROJ ) ;
+if(!PathFileExists(strPath))
+{
+	if ( !::CreateDirectory( strPath, NULL ) )
+	{
+		strMsg.Format( IDS_NEW_PROJ_CHECK_CREATE_DIR, strPath ) ;
+		MessageBox( strMsg, strTitle, MB_OK | MB_ICONERROR ) ;
+		return FALSE ;
+	}
+}
+//}
+
+
+获取exe路径，并分解得到的路径
+TCHAR * LQM_Get_App_Dir(TCHAR * the_dir)
+{
+	//AfxMessageBox(_pgmptr);//全局变量_pgmptr中就有ModuleFileName
+	TCHAR path_buffer[_MAX_PATH] = {0};
+	TCHAR drive[_MAX_DRIVE] = {0};
+	TCHAR dir[_MAX_DIR] = {0};
+	TCHAR fname[_MAX_FNAME] = {0};
+	TCHAR ext[_MAX_EXT] = {0};
+
+	GetModuleFileName(GetModuleHandle(NULL),path_buffer,_MAX_PATH);
+	_tsplitpath( path_buffer, drive, dir, fname, ext );
+	_stprintf(the_dir,_T("%s%s"),drive, dir);
+	return the_dir;
+}
+
+
+BOOL COpenOCXControl::IsCtrlLeft(CString &clsID_left, CString &clsID_right)
+{
+	if (0 == clsID_left.Compare(clsID_right))
+	{
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL COpenOCXControl::GetOriPathByPathV7( CString& strOri, CString& strPathv7 )
+{
+	CString strOrgPath, strDstPath;
+	//strPathv7.Format(_T("%s"), pApp->m_ProjectDirect);
+	int nIdx = strPathv7.Find(_T("_v7"));
+	if (-1 != nIdx)
+	{
+		strOri = strPathv7.Mid(0, nIdx);
+		strOri.Append(_T("\\"));
+		strPathv7.Append(_T("\\"));
+		return TRUE;
+	}
+	return FALSE;
+}
+
+label:InstallShield 脚本，启动程序隐藏窗口
+	nResult = LaunchApplication(INSTALLDIR ^ "HistorySvr.exe", " -run", "", SW_HIDE, LAAW_PARAMETERS.nTimeOut, WAIT | LAAW_OPTION_CHANGEDIRECTORY | LAAW_OPTION_FIXUP_PROGRAM );  
+
+label:CTime 的一般常用方法
+
+CTime 初始化
+
+CTime T; 
+int year; 
+T=CTime(2016,8,16,8,8,8); //设置时间为2008年8月8号8时8分8秒
+
+//或者 CTime T =CTime::GetCurrentTime(); //设置为当前时间 
+year=t.GetYear(); //获取年份 
+　　 
+CTime 与 CString转换
+
+CTime m_StartTime1 = CTime::GetCurrentTime(); 
+CString csStartTime = m_StartTime1.Format( “%Y%m%d%H%M%S” );
+
+将CString转为CTime
+
+方法一： 
+CString timestr = “2000年04月05日”; 
+int a,b,c ; 
+sscanf(timestr.GetBuffer(timestr.GetLength()),”%d年%d月%d日”,&a,&b,&c); 
+CTime time(a,b,c,0,0,0);
+
+方法二： 
+CString s(“2001-8-29 19:06:23”); 
+int nYear, nMonth, nDate, nHour, nMin, nSec; 
+sscanf(s, “%d-%d-%d %d:%d:%d”, &nYear, &nMonth, &nDate, &nHour, &nMin, &nSec); 
+CTime t(nYear, nMonth, nDate, nHour, nMin, nSec);
+
+方法三： 
+CString timestr = “2000年04月05日”; 
+int year,month,day; 
+BYTE tt[5]; 
+//get year 
+memset(tt, 0, sizeof(tt)); 
+tt[0] = timestr[0]; 
+tt[1] = timestr[1]; 
+tt[2] = timestr[2]; 
+tt[3] = timestr[3]; 
+year= atoi((char *)tt); 
+//get month 
+memset(tt, 0, sizeof(tt)); 
+tt[0] = timestr[6]; 
+tt[1] = timestr[7]; 
+month = atoi((char *)tt); 
+//get day 
+memset(tt, 0, sizeof(tt)); 
+tt[0] = timestr[10]; 
+tt[1] = timestr[11]; 
+CTime time(year,month,day,0,0,0); 
+从上面来看,很明显使用sscanf()函数的优势.
+
+将CTIme转换为CString的方法: 
+　　CTime tmSCan = CTime::GetCurrentTime(); 
+　　CString szTime = tmScan.Format(“’%Y-%m-%d %H:%M:%S’”); 
+　　这样得到的日期时间字符串就是以”2006-08-16 09:24:59”的格式.这是不是很方便呢? 
+　　//取得CTime中的日期 
+　　CString cstrDate = tmScan.Format(“%Y-%m-%d”); 
+　　//取得CTime中的时间 
+　　CString cstrTime = tmScan.Format(“%H:%M-%S”); 
+　　sprintf还有个不错的表妹：strftime，专门用于格式化时间字符串的，用法跟她表哥很像，也是一大堆格式控制符，只是毕竟小姑娘家心细，她还要调用者指定缓冲区的最大长度，可能是为了在出现问题时可以推卸责任吧。这里举个例子： 
+　　更多更好的sprintf()函数说明参考:《spirntf，你知道多少？》 
+　　time_t t = time(0); 
+　　//产生”YYYY-MM-DD hh:mm:ss”格式的字符串。 
+　　char s[32]; 
+　　strftime(s, sizeof(s), “%Y-%m-%d %H:%M:%S”, localtime(&t)); 
+　　sprintf在MFC中也能找到他的知音：CString::Format，strftime在MFC中自然也有她的同道：CTime::Format，这一对由于从面向对象哪里得到了赞助，用以写出的代码更觉优雅
+
+两个CTime time1,time2,计算他们的天数 
+实际上产生的是个CTimeSpan对象，相当于： 
+CTimeSpan span = time1 - time2; 
+int days = span.GetDays();
+
+又如： 
+CTime time4( 2007, 1, 1, 22, 15, 0 ); // 10:15PM March 19, 1999 
+CTime time = CTime::GetCurrentTime(); 
+CTimeSpan span = time - time4; 
+int iSeconds = span.GetSeconds(); 
+int idays = iSeconds / 86400
+
+
+label:char* 和wchar_t*转换,unicode和multibyte互转
+void c2w(wchar_t *pwstr,size_t len,const char *str)
+{
+	if(str)
+	{
+		size_t nu = strlen(str);
+		size_t n =(size_t)MultiByteToWideChar(CP_ACP, 0, (const char *)str, (int)nu, NULL, 0);
+		if(n>=len)n=len-1;
+		MultiByteToWideChar(CP_ACP, 0, (const char *)str, (int)nu, pwstr, (int)n);
+		pwstr[n]=0;
+	}
+}
+
+char *w2c(char *pcstr,const wchar_t *pwstr, size_t len)
+
+{
+	int nlength=wcslen(pwstr);
+	//获取转换后的长度
+	int nbytes = WideCharToMultiByte( 0, // specify the code page used to perform the conversion
+		0,         // no special flags to handle unmapped characters
+		pwstr,     // wide character string to convert
+		nlength,   // the number of wide characters in that string
+		NULL,      // no output buffer given, we just want to know how long it needs to be
+		0,
+		NULL,      // no replacement character given
+		NULL );    // we don't want to know if a character didn't make it through the translation
+	// make sure the buffer is big enough for this, making it larger if necessary
+	if(nbytes>len)   nbytes=len;
+	// 通过以上得到的结果，转换unicode 字符为ascii 字符
+	WideCharToMultiByte( 0, // specify the code page used to perform the conversion
+		0,         // no special flags to handle unmapped characters
+		pwstr,   // wide character string to convert
+		nlength,   // the number of wide characters in that string
+		pcstr, // put the output ascii characters at the end of the buffer
+		nbytes,                           // there is at least this much space there
+		NULL,      // no replacement character given
+		NULL );
+	return pcstr ;
+}
+
+/// <summary> 
+///utf8转unicode
+/// </summary>
+bool CKmUser::Utf8ToUnicode( std::string &utf8_string,std::wstring &unicode_string)
+{
+	unicode_string = L"";
+	if (utf8_string.compare("") == 0 )
+	{
+		return false;
+	}
+
+	const char* temp_utf8_string = utf8_string.c_str();
+	int unicode_string_len = ::MultiByteToWideChar(CP_UTF8, NULL, temp_utf8_string, strlen(temp_utf8_string), NULL, 0);  
+	if (0 == unicode_string_len )
+	{
+		return false;
+	}
+
+	wchar_t* temp_unicode_string = new wchar_t[unicode_string_len+1];
+	memset(temp_unicode_string,0,sizeof(wchar_t)*(unicode_string_len+1));
+	if (0 == ::MultiByteToWideChar(CP_UTF8, NULL, temp_utf8_string, strlen(temp_utf8_string),temp_unicode_string, unicode_string_len))
+	{
+		delete[] temp_unicode_string;
+		temp_unicode_string = NULL;
+		return false;
+	} 
+
+	unicode_string = temp_unicode_string;
+	delete[] temp_unicode_string;
+	temp_unicode_string = NULL;
+
+	return true;
+
+}
+
+/// <summary> 
+///unicode转utf-8
+/// </summary>
+bool  CKmUser::UnicodeToUtf8( std::wstring &unicode_string,std::string &utf8_string)
+{
+	utf8_string = "";
+	if (_wcsicmp(unicode_string.c_str(),L"") == 0 )
+	{
+		return false;
+
+	}
+
+	DWORD utf8_string_len = WideCharToMultiByte(CP_UTF8,NULL,unicode_string.c_str(),-1,NULL,0,NULL,FALSE);// WideCharToMultiByte的运用	
+	if (0 == utf8_string_len)
+	{
+		return false;
+	}
+	char *temp_utf8_string = new char[utf8_string_len];
+	memset(temp_utf8_string,0,sizeof(char)*utf8_string_len);
+	if (0 == WideCharToMultiByte (CP_UTF8,NULL,unicode_string.c_str(),-1,temp_utf8_string,utf8_string_len,NULL,FALSE))
+	{
+		delete []temp_utf8_string;// aKmtempTagName的清除
+		temp_utf8_string = NULL;
+		return false;
+	}
+
+	utf8_string =(std::string)temp_utf8_string;
+	delete []temp_utf8_string;// aKmtempTagName的清除
+	temp_utf8_string = NULL;
+
+	return true;
+}
+
+
+CStringA，CStringW和CString之间的转换
+2015-11-05 14:27 1521人阅读 评论(0) 收藏 举报
+ 分类： C/C++/C#（34）   Windows（13）  
+版权声明：本文为博主原创文章，未经博主允许不得转载。
+现实中用到CStringA和CStringW的转换，就封装了一下。
+[cpp] view plain copy
+#pragma once  
+class CStringToolExt  
+{  
+public:  
+    CStringToolExt();  
+    ~CStringToolExt();  
+public:  
+    static CStringA CStrT2CStrA(const CString &cstrSrc);  
+    static CStringW CStrT2CStrW(const CString &cstrSrc);  
+    static CString CStrA2CStrT(const CStringA &cstrSrc);  
+    static CString CStrW2CStrT(const CStringW &cstrSrc);  
+private:  
+    static CStringW CStrA2CStrW(const CStringA &cstrSrcA);  
+    static CStringA CStrW2CStrA(const CStringW &cstrSrcW);  
+};  
+
+[cpp] view plain copy
+#include "stdafx.h"  
+#include "StringToolExt.h"  
+  
+  
+CStringToolExt::CStringToolExt()  
+{  
+}  
+  
+  
+CStringToolExt::~CStringToolExt()  
+{  
+}  
+  
+CStringA CStringToolExt::CStrT2CStrA(const CString &cstrSrc)  
+{  
+#ifdef _UNICODE  
+    return CStrW2CStrA(cstrSrc);  
+#else  
+    return cstrSrc;  
+#endif  
+}  
+  
+CStringW CStringToolExt::CStrT2CStrW(const CString &cstrSrc)  
+{  
+#ifdef _UNICODE  
+    return cstrSrc;  
+#else  
+    return CStrA2CStrW(cstrSrc);  
+#endif  
+}  
+  
+CString CStringToolExt::CStrA2CStrT(const CStringA &cstrSrc)  
+{  
+#ifdef _UNICODE  
+    return CStrA2CStrW(cstrSrc);  
+#else  
+    return cstrSrc;  
+#endif  
+}  
+  
+CString CStringToolExt::CStrW2CStrT(const CStringW &cstrSrc)  
+{  
+#ifdef _UNICODE  
+    return cstrSrc;  
+#else  
+    return CStrW2CStrA(cstrSrc);  
+#endif  
+}  
+  
+CStringA CStringToolExt::CStrW2CStrA(const CStringW &cstrSrcW)  
+{  
+    int len = WideCharToMultiByte(CP_ACP, 0, LPCTSTR(cstrSrcW), -1, NULL, 0, NULL, NULL);  
+    char *str = new char[len];  
+    memset(str, 0, len * sizeof(char));  
+    WideCharToMultiByte(CP_ACP, 0, LPCWSTR(cstrSrcW), -1, str, len, NULL, NULL);  
+    CStringA cstrDestA = str;  
+    delete str;  
+    return cstrDestA;  
+}  
+  
+CStringW CStringToolExt::CStrA2CStrW(const CStringA &cstrSrcA)  
+{  
+    int len = MultiByteToWideChar(CP_ACP, 0, LPCSTR(cstrSrcA), -1, NULL, 0);  
+    wchar_t *wstr = new wchar_t[len];  
+    memset(wstr, 0, len * sizeof(wchar_t));  
+    MultiByteToWideChar(CP_ACP, 0, LPCSTR(cstrSrcA), -1, wstr, len);  
+    CStringW cstrDestW = wstr;  
+    delete wstr;  
+    return cstrDestW;  
+}  
+
+
+label:xml
+KvValue attrVal;
+CString strTmp;
+KvXmlElementPtr pPicNode;
+KvXmlElementPtr pPicPropNode;
+const KvXmlDocument* XmlDocPtr;
+XmlDocPtr = pNode->GetXmlDocPtr();
+if (XmlDocPtr != NULL)
+{
+	pPicNode = XmlDocPtr->SelectElement(_T("Picture"));
+	if (pPicNode != NULL)
+	{
+		pPicPropNode = pPicNode->SelectElement(_T("Pic"));
+		if (pPicPropNode != NULL)
+		{
+			pPicPropNode->GetAttribute(_T("PicDocuVer"), attrVal);
+			strTmp = attrVal.asWideString();
+		}
+	}
+}
+
+label:判断路径是否存在或有效
+#include "shlwapi.h"
+#pragma comment(lib,"shlwapi.lib")
+LWSTDAPI_(BOOL) PathIsDirectoryA(__in LPCSTR pszPath)
+LWSTDAPI_(BOOL) PathFileExistsA(__in LPCSTR pszPath)
+
+label:设置控件背景透明（）
+ HBRUSH CLanguageSelDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+ {
+ 	HBRUSH hbr=CDialog::OnCtlColor(pDC,pWnd,nCtlColor);
+ 
+ 	int iID = pWnd->GetDlgCtrlID();
+ 	if(IDC_RADIO_CHS == iID || IDC_RADIO_EN == iID)     
+ 	{     
+ 		pDC->SetBkMode(TRANSPARENT);
+ 		CRect rc;
+ 		pWnd->GetWindowRect(&rc);
+ 		ScreenToClient(&rc);
+ 		CDC* dc = GetDC();
+ 		pDC->BitBlt(0,0,rc.Width(),rc.Height(),dc,rc.left,rc.top,SRCCOPY);
+ 		//把父窗口背景图片先画到按钮上
+ 		ReleaseDC(dc);
+ 		hbr = (HBRUSH) ::GetStockObject(NULL_BRUSH);   
+ 	} 
+ 	return hbr;
+ }
+
+label:弱智错误1 
+控件调试不进断点
+原因：未注册
+
+label:vs调试很卡很慢
+处理办法：删除ncb文件，删除大量的断点试试
+
+
+
+label:获取当期工程路径
+	TCHAR system_direct[_MAX_DIR] ;
+	::GetProfileString(_T("King50"),_T("ApplicationDirectory") ,_T(""), system_direct, _MAX_DIR );
+
+
+label:数组初始化（需养成习惯）
+	TCHAR szFullPath[ _MAX_PATH ]  = {0};
+	TCHAR szDir[ _MAX_PATH ]   = {0};
+	TCHAR szTemp[ _MAX_PATH ]   = {0};
+
+
+label:内核对象之事件对象
+	//进程1创建事件对象，通知开发系统进行导入
+	g_hEventImportExplorer = CreateEvent(NULL, FALSE, FALSE, _T("Global\\xmlImportExplorer"));
+	SetEvent(g_hEventImportExplorer);
+
+	//进程2等待事件对象执行相关操作
+	::WaitForSingleObject(g_hEventImportExplorer, INFINITE);
+	ResetEvent(g_hEventImportExplorer);
+	{
+		dosomething();
+	}
+
+label:MFC选择文件
+	BOOL bOpenFileDialog=TRUE;
+	LPCTSTR lpstrDefExt = _T("bmp");
+	LPCTSTR lpszFileName= _T("*.bmp");
+	DWORD   dwFlags    = OFN_EXPLORER|OFN_ENABLESIZING|OFN_FILEMUSTEXIST|OFN_LONGNAMES|OFN_HIDEREADONLY;//|OFN_NOCHANGEDIR ;|OFN_ALLOWMULTISELECT
+	LPCTSTR lpszFilter  = _T("bmp Files (*.bmp)|*.bmp|jpg Files (*.jpg)|*.jpg|wmf Files (*.wmf)|*.wmf|All Files (*.*)|*.*||");
+	CWnd* pParentWnd = AfxGetMainWnd();
+
+	CFileDialog aCFileDialog(bOpenFileDialog,lpstrDefExt,lpszFileName,dwFlags,lpszFilter,pParentWnd);
+	CString     pathname;
+
+	if(aCFileDialog.DoModal()==IDOK)
+	{
+		pathname=aCFileDialog.GetPathName();
+
+		if(pathname.GetLength()>0) 
+		{
+			XXX;
+		}
+	}
+
+label:数学|math.h|圆周率
+math.h:
+	#define M_PI       3.14159265358979323846
+	#define M_PI_2     1.57079632679489661923
+	#define M_PI_4     0.785398163397448309616
+
+仅仅#include <math.h>是不够的，需要以下两句：
+#define _USE_MATH_DEFINES  
+#include <math.h> 
+
+
+label:设置窗口透明
+方法一：
+{
+  	SetWindowLong(m_pMainWnd->GetSafeHwnd(),GWL_EXSTYLE, GetWindowLong(m_pMainWnd->
+  	GetSafeHwnd(),GWL_EXSTYLE)|WS_EX_LAYERED);
+  	COLORREF colorTransparent;
+  	colorTransparent = RGB(255, 255,255);
+  	int nRet = SetLayeredWindowAttributes(m_pMainWnd->GetSafeHwnd(), colorTransparent, 55, LWA_ALPHA);	
+}
+
+方法二：
+void CAboutDlg::SetTransparentWnd(HWND hWnd, COLORREF clr , BYTE byAlpha, DWORD dwFlags)
+{
+	typedef BOOL (FAR PASCAL *Fun)(HWND,COLORREF,BYTE,DWORD); 
+	Fun SetTransparentFun; 
+	HMODULE hModule=LoadLibrary(_T("User32.DLL"));
+	if(hModule) 
+	{ 
+		SetTransparentFun=(Fun)GetProcAddress(hModule,"SetLayeredWindowAttributes"); 
+		if(SetTransparentFun&&hWnd) 
+		{ 
+			SetWindowLong(hWnd,GWL_EXSTYLE,GetWindowLong(hWnd,GWL_EXSTYLE)|0x80000L); 
+			SetTransparentFun(hWnd,clr,byAlpha,dwFlags); 
+		} 
+		FreeLibrary(hModule); 
+	} 
+}
+
+
+label:根据进程名获取进程ID，获取第n个同名进程ID
+DWORD WINAPI GetProcessIdByName(LPCTSTR lpFilename)  //lpFilename为全路径的话就无所谓同名进程了
+{
+    DWORD dwProcessId = 0;
+    hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
+    if(hProcessSnap == INVALID_HANDLE_VALUE) return 0;
+    if(!Process32First(hProcessSnap,&pe32)){CloseHandle(hProcessSnap);return 0;}
+     
+    do
+    {
+        _strupr(pe32.szExeFile);
+        if(strstr(pe32.szExeFile,szFilename))
+        {
+            dwProcessId = pe32.th32ProcessID;
+            break;
+        }
+    }
+    while(Process32Next(hProcessSnap,&pe32));
+     
+    CloseHandle(hProcessSnap);
+     
+    return dwProcessId;
+}
+
+DWORD WINAPI GetProcessIdByName(LPCTSTR lpFilename,int No)//返回0或第No(1..n)个名字为lpFilename的进程Id
+{
+    int n=0;
+    DWORD dwProcessId = 0;
+    PROCESSENTRY32 pe32;
+    hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
+    if(hProcessSnap == INVALID_HANDLE_VALUE) return 0;
+    if(!Process32First(hProcessSnap,&pe32)){CloseHandle(hProcessSnap);return 0;}
+     
+    do
+    {
+        if(0==_stricmp(pe32.szExeFile,lpFilename))
+        {
+            n++;
+            if (n==No) 
+            {
+                dwProcessId = pe32.th32ProcessID;
+                break;
+            }
+        }
+    }
+    while(Process32Next(hProcessSnap,&pe32));
+     
+    CloseHandle(hProcessSnap);
+     
+    return dwProcessId;
+}
+
+
+lable:文件读写ifstream，ofstream.
+读:
+	ifstream inFile(strLoginFile.c_str());
+	if (inFile)
+	{
+		char szContent[64] = {0};
+		while(inFile.getline(szContent, sizeof(szContent)))
+		{
+			std::string strContent = szContent;
+			std::wstring strUserInfo = L"";
+			Utf8ToUnicode(strContent, strUserInfo);
+			vUserInfo.push_back(strUserInfo);
+		}
+	}
+	inFile.close();
+写：
+	ofstream outFile(strLoginFile.c_str());
+	if (!outFile)
+	{
+		return;
+	}
+	if (outFile.is_open())
+	{
+		outFile.clear();
+		for (int i = 0; i < vUserInfo.size(); i++)
+		{
+			std::wstring strUserInfo = vUserInfo.at(i);
+			std::string strContent;
+			UnicodeToUtf8(strUserInfo, strContent);
+			outFile << strContent.c_str() << endl;
+		}
+	}
+	outFile.close();
+
+label:网关
+网关的IP地址是具有路由功能的设备的IP地址，具有路由功能的设备有路由器、启用了路由协议的服务器（实质上相当于一台路由器）、代理服务器（也相当于一台路由器）。
+
+
+label: 组态王信息窗口打印信息 ShowMessage()
+
+#define WM_MESSAGE_OUTPUT          WM_USER+50
+
+void /*CKxNetNode::*/ShowMessage( const TCHAR* msg,BOOL bIsOut/* = TRUE*/)  // 显示通信信息
+{
+	CString szTemp(_T("kingmess"));
+	HWND hMessWnd = ::FindWindow(szTemp, NULL);
+	CString strMsg;
+	ATOM messAtom;
+	if( hMessWnd && bIsOut )
+	{
+		strMsg.Append(_T("TouchvewOcx:"));
+		strMsg += msg;
+		messAtom = GlobalAddAtom( strMsg );
+		if (messAtom)
+		{
+			::SendMessage(hMessWnd,WM_MESSAGE_OUTPUT,(WPARAM)messAtom,0);
+			GlobalDeleteAtom(messAtom);
+		}
+	}
+}
+
+
+lebal:在WinXP上执行openprocess()失败解决方案
+查看msdn中有如下描述To open a handle to another local process and obtain full access rights, you must enable the SeDebugPrivilege privilege
+故需要在openprocess()之前执行这段代码
+VOID EnableDebugPriv()  
+{  
+	HANDLE hToken;  
+	LUID sedebugnameValue;  
+	TOKEN_PRIVILEGES tkp;  
+	OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken);  
+	LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &sedebugnameValue);  
+	tkp.PrivilegeCount = 1;  
+	tkp.Privileges[0].Luid = sedebugnameValue;  
+	tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;  
+	AdjustTokenPrivileges(hToken, false, &tkp, sizeof tkp, NULL, NULL);  
+	CloseHandle(hToken);
+}
+
+label:组态王网络工程数据收发
+	客户端向服务器发送数据时客户端执行函数：
+	----->>>  CNetRealDB::SetDiscInDB   ----->>>  CNetRealDB::SendVariableToGeniusDB   ----->>>  CNetGeniusDB::WriteVarQuote   ----->>>  CKxNetManage::ClientWriteVarQuote   ----->>>  
+
+	客户端向服务器发送数据时服务端执行函数：m_NetGeniusDB.ReadVarQuote() ;
+	----->>>  CNetGeniusDB::ReadVarQuote   ----->>>  CNetGeniusDB::RemoteSetVariableValue
+
+	CMainFrame:OnTimer
+	{
+		m_RealDB.SendDdeDataToNet();//"系统定时--发送网络数据!"
+		m_NetGeniusDB.ReadVarQuote() ;//系统定时--读网络实时数据!
+		m_NetGeniusDB.ReadAlarm();//系统定时--读网络报警数据!
+		m_NetGeniusDB.ReadIOClinetVarList();	//zkk读取IO客户端变量引用列表
+		m_AlarmDB.ExecuteAlarm(m_system_timer);//系统定时--存储报警数据!
+		m_RealDDE.AutoSendData();//系统定时--DDESERVER 发送数据!
+	} 
+
+
+lable:组态王数据类型宏定义
+#define  FLOAT_TYPE       1
+#define  LONG_TYPE        2
+#define  STRING_TYPE      3
+#define  BOOL_TYPE        4
+
+
+label:设置控件风格属性
+BOOL CVariableConfigDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+	long lKvTreeStyle=::GetWindowLong(m_treeKvVarGroup.GetSafeHwnd(),GWL_STYLE);
+	lKvTreeStyle = lKvTreeStyle	| /*TVS_EDITLABELS |*/ TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS | TVS_FULLROWSELECT;
+	::SetWindowLong(m_treeKvVarGroup.GetSafeHwnd(), GWL_STYLE, lKvTreeStyle);
+
+	long lKmTreeStyle=::GetWindowLong(m_treeKmVarGroup.GetSafeHwnd(),GWL_STYLE);
+	lKmTreeStyle = lKmTreeStyle	| TVS_EDITLABELS | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS | TVS_FULLROWSELECT;
+	::SetWindowLong(m_treeKmVarGroup.GetSafeHwnd(), GWL_STYLE, lKmTreeStyle);
+	...
+}
+
+
+lebal:C++中vector容器的逆序访问
+　　今天在写个小的十进制转换程序时，遇到个问题就是关于vector容器的逆序访问问题，后来知道其中有多种方法可以解决，下面介绍我应用的两种简单方法，顺便熟悉一下vector容器的相关函数。下面是相关代码：
+
+复制代码
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int main()
+{
+    int a = 0, d = 0, answer1 = 0, mod = 0, answer2 = 0;
+    vector<int> m;
+    cout << "Please input the number :" << endl;
+    cin >> a;
+    cout << "Please input the scale :" << endl;
+    cin >> d;
+    while (a)
+    {
+        mod = a%d;
+        a = a / d;
+        m.push_back(mod);
+    }
+    for (vector<int>::reverse_iterator it = m.rbegin(); it != m.rend(); it++)
+    {
+        answer2 = (*it) + answer2 * 10;
+    }
+
+    reverse(m.begin(), m.end());
+    for (vector<int>::iterator it = m.begin(); it != m.end(); it++)
+    {
+        answer1 = (*it)+answer1*10;
+    }
+    cout << answer1 << endl;
+    cout << answer2 << endl;
+}
+
+　　程序中用蓝色和黄色标记的分别是两种不同的方法，第一种利用的是逆置迭代器，要注意逆置迭代器的初始化。第二种是利用头文件<algorithm>中的函数reverse进行容器的逆置，要注意包含头文件。两种方法都很简单和方便。
+
+
+
+lable:用输入法打出ascii特殊符号
+ALT同时输入字符对应的ASCII的十进制码的方式输入字符;
+
+lable:KV75组态王增加脚本函数需要修改的代码
+..\src\KvExplorer\Make655\DB\Express.h
+static FUN_DECLARE g_fundeclares[] = 
+{
+...
+}
+
+..\src\KvExplorer\Make655\TOUCHEXPLORER\WebCompiler.cpp
+static TCHAR* BASED_CODE g_szRunFunctions[] = 
+{
+...
+}
+static BYTE BASED_CODE g_bFunctinRetType[] = 
+{
+...
+}
+
+..\src\KView\View655\db\Express.h
+sVarStruct* CalllistAllUsers(ExpItem* pProgram);
+
+static KvFunction BASED_CODE g_KvFunction[] = 
+{
+...
+}
+
+..\src\KView\View655\db\eval_fu3.cpp
+sVarStruct* CalllistAllUsers( ExpItem* pProgram )
+{
+...
+}
+
+..\src\Web\TouchvewOcx\Script\KxAPIDefine.h
+static KvFunctionDefine g_KvFuctionDefine[] = 
+{
+...
+}
+
+..\src\Web\TouchvewOcx\Script\KxAPIFunctions.h
+class CKxAPIFunctions
+{
+	sVarStruct* CallAck(ExpItem* pProgram);
+	...
+}
+
+..\src\Web\TouchvewOcx\Script\KxAPIFunctions.cpp
+void CKxAPIFunctions::KxInitialFunctionPtrArray()
+{
+	m_KxFunctionPtrArray[ nIndex++ ] = &CKxAPIFunctions::CallAck;				//1
+...
+}
+
+sVarStruct* CKxAPIFunctions::CalllistAllUsers( ExpItem* pProgram )        //脚本具体实现
+{
+...
+}
+
+label:mfc listcontrol 设置一行为选中状态
+m_listctrl.SetItemState(nHitItem, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
+
+
+label:mfc 多个消息共用一个响应函数
+COMMAND_RANGE_HANDLER( idFirst, idLast, func )
+ 
+
+label:本地时间和UTC时间互转
+local To utc
+BOOL WINAPI TzSpecificLocalTimeToSystemTime(
+  __in          LPTIME_ZONE_INFORMATION lpTimeZoneInformation,
+  __in          LPSYSTEMTIME lpLocalTime,
+  __out         LPSYSTEMTIME lpUniversalTime
+);
+
+utc To local
+BOOL WINAPI SystemTimeToTzSpecificLocalTime(
+  __in          LPTIME_ZONE_INFORMATION lpTimeZone,
+  __in          LPSYSTEMTIME lpUniversalTime,
+  __out         LPSYSTEMTIME lpLocalTime
+);
+
+
+label:在对话框中cview绘制
+BOOL CtestDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+	// TODO: Add extra initialization here
+	CRect rc;
+	GetClientRect(rc);
+	rc.MoveToX(rc.right/2);
+	m_FormView = new CFormViewEx;
+	CWnd* pWnd = m_FormView;
+	pWnd->Create(NULL, NULL, WS_CHILD | WS_VISIBLE, rc, this, AFX_IDW_PANE_FIRST, NULL);
+	m_FormView->OnInitialUpdate();
+	m_FormView->ShowWindow(SW_HIDE);
+
+	return TRUE;  // return TRUE  unless you set the focus to a control
+}
+
+label:野指针
+野指针指向一个已删除的对象或未申请访问受限内存区域的指针。与空指针不同，野指针无法通过简单地判断是否为 NULL避免，而只能通过养成良好的编程习惯来尽力减少。对野指针进行操作很容易造成程序错误。
+成因
+野指针主要是因为这些疏忽而出现的删除或申请访问受限内存区域的指针。
+1.指针变量未初始化
+2.指针释放后之后未置空
+
+规避
+1.初始化时置 NULL
+2.释放时置 NULL
+
+
+label:windbg
+遇到windbg提示符号文件加载失败，可在Symbol File Path里面加上下面的语句
+SRV*c:\windows\symbols*http://msdl.microsoft.com/download/symbols
+
+
+label:sql statement
+select:
+select * from AlarmTime order by AlarmTime, VarName ASC    升序
+select * from AlarmTime order by AlarmTime, VarName DESC   逆序
+
+
+BLOCK KV75SP1
+内存变量不计点（all product ranges reference）
+
+
+BLOCK Com relevant
+label:OleInitialize
+OleInitialize是一个Windows API函数。它的作用是在当前单元（apartment）初始化组件对象模型（COM）库，将当前的并发模式标识为STA（single-thread apartment——单线程单元），并启用一些特别用于OLE技术的额外功能。除了CoGetMalloc和内存分配函数，应用程序必须在调用COM库函数之前初始化COM库。
+不需要OleInitialize函数所启用的额外功能的应用程序应该调用CoInitializeEx来代替OleInitialize。
+
+
+BLOCK Activex Control
+label:AfxEnableControlContainer()
+AfxEnableControlContainer()
+要想在应用程序中使用ActiveX控件，必须使你的应用程序成为ActiveX控件包容器。ActiveX   控件包容器就是完全支持ActiveX控件，并能把控件组合进自己的窗口或对话框的父应用程序。利用MFC的AppWizard，你可以很方便地创建你的包容器程序。事实上，在用AppWizard创建新的应用程序时，你的应用程序就被缺省设置为控件包容器，即在第3步选中支持ActiveX   Controls的复选框。如果你在创建过程中没有选择这项技术支持，以后也可以手动地加入这项支持。如果你手动添加这个函数，和APPWIZEARD添加效果是一样的   
+
+BLOCK WINDOWS API
+label:获取当前电脑操作系统信息
+Remarks:Retrieves information about the current operating system.
+BOOL WINAPI GetVersionEx(
+  __in_out      LPOSVERSIONINFO lpVersionInfo
+);
+typedef struct _OSVERSIONINFO {  
+DWORD dwOSVersionInfoSize;  
+DWORD dwMajorVersion;  
+DWORD dwMinorVersion;  
+DWORD dwBuildNumber; 
+DWORD dwPlatformId; 
+TCHAR szCSDVersion[128];
+} OSVERSIONINFO;
+
+
