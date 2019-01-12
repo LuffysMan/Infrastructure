@@ -53,8 +53,101 @@
 </OPENCV>
 <C/C++>
 	<include,常用头文件>
-	
+	#include <algorithm>  //可以用sort函数
 	</include,常用头文件>
+	<file, 文件读写, 序列化>
+	//{以二进制方式将opencv二进制文件写入dat文件, 然后再重新读取出来恢复
+	int serialize(Mat src, char* filename)
+	{
+		int nTmp = 0;
+		uchar cTmp = 0;
+		Vec3b vecTmp = Vec3b(0, 0, 0);
+		if (-1 == remove(filename));
+		ofstream ofs(filename, ios::out | ios::binary);//打开record.txt文件，以ios::app追加的方式输入
+		if (!ofs)
+		{
+			cout << "打开文件失败" << endl;
+		}
+		else
+		{
+			nTmp = src.rows;
+			ofs.write((char*)&nTmp, sizeof(int));
+			nTmp = src.cols;
+			ofs.write((char*)&nTmp, sizeof(int));
+			ofs.write((char*)src.data, sizeof(Vec3b)*src.rows*src.cols);
+		}
+		ofs.close();//关闭文件
+		return 0;
+	}
+	int deserialize(Mat& dst, char* filename)
+	{
+		int nTmp = 0;
+		uchar cTmp = 0;
+		Vec3b vecTmp = Vec3b(0, 0, 0);
+		ifstream ifs(filename, ios::in|ios::binary);
+		if (!ifs)
+		{
+			cout << "打开文件失败" << endl;
+		}
+		else
+		{
+			ifs.read((char*)&nTmp, sizeof(int));
+			dst.rows = nTmp;
+			ifs.read((char*)&nTmp, sizeof(int));
+			dst.cols = nTmp;
+			ifs.read((char*)dst.data, sizeof(Vec3b)*dst.rows*dst.cols);
+			//ifs >> vecTmp[2];
+			//dst.ptr<Vec3b>(i)[j] = vecTmp;
+		}
+		ifs.close();//关闭文件
+		return 0;
+	}
+	//}以二进制
+	
+	一、打开文件
+	　　在fstream类中，有一个成员函数open()，就是用来打开文件的，其原型是：
+	　　void open(const char* filename,int mode,int access);
+	参数：
+	　　filename：　　要打开的文件名
+	　　mode：　　　　要打开文件的方式
+	　　access：　　　打开文件的属性
+
+	　　打开文件的方式在类ios(是所有流式I/O类的基类)中定义.
+	常用的值如下：
+	　　ios::app：　　　以追加的方式打开文件
+	　　ios::ate：　　　文件打开后定位到文件尾，ios:app就包含有此属性
+	　　ios::binary：　以二进制方式打开文件，缺省的方式是文本方式。两种方式的区别见前文
+	　　ios::in：　　　 文件以输入方式打开(文件数据输入到内存)
+	　　ios::out：　　　文件以输出方式打开(内存数据输出到文件)
+	　　ios::nocreate： 不建立文件，所以文件不存在时打开失败
+	　　ios::noreplace：不覆盖文件，所以打开文件时如果文件存在失败
+	　　ios::trunc：　　如果文件存在，把文件长度设为0
+	　　可以用“或”把以上属性连接起来，如ios::out|ios::binary
+
+	　　打开文件的属性取值是：
+	　　0：普通文件，打开访问
+	　　1：只读文件
+	　　2：隐含文件
+	　　4：系统文件
+
+	　　可以用“或”或者“+”把以上属性连接起来，如3或1|2就是以只读和隐含属性打开文件。
+
+	　　例如：以二进制输入方式打开文件c:\config.sys
+	　　fstream file1;
+	　　file1.open("c:\\config.sys",ios::binary|ios::in,0);
+
+	    特别提出的是，fstream有两个子类：
+		ifstream(input file stream)和ofstream(outpu file stream)，
+	    ifstream默认以输入方式打开文件
+	    ofstream默认以输出方式打开文件
+	</file,读写文件,序列化>
+	<overload, 重载运算符>
+	void operator=(const Distance &D )
+      { 
+         feet = D.feet;
+         inches = D.inches;
+      }
+	</overload,重载运算符>
 	<stack overflow,栈溢出>
 		以vs2017为例，windows栈大小默认为1M，超过1M就会报错提示栈溢出:stack overflow
 		举例：
@@ -198,6 +291,11 @@
 
 <python>
 	<python_pandas>
+		<pandas, 读数据>
+		直接读字典对象
+		读CSV
+		读数据库(内置sqlite)
+		</pandas,读数据>
 		<operation,基本操作>
 		# -*- coding: utf-8 -*-
 		
@@ -227,6 +325,14 @@
 			mydata = pd.read_csv(u"例子.csv",encoding = "gb18030")
 		</error,读CSV报错>
 	</python_pandas>
+	<list, 列表>
+	#创建列表
+	>>>lst = [] #创建空列表
+	>>>lst = [1, 2, "ASDF"]	#非空列表
+	>>>lst = range(1, 11)		#快速创建列表, 元素为1到10的数字
+	>>>lst = [x*x for x in range(1, 11) if x%2 == 0]	#列表生成式
+	[4, 16, 36, 64, 100]
+	</list,列表>
 	<numpy>
 		tolist			将numpy数组转换为Python列表的函数
 		copy			复制numpy数组元素的函数
@@ -237,7 +343,7 @@
 		eye				该函数用来创建第K条对角线上元素为1的对角矩阵
 		vstack,hstack	将数组合并为二维数组的函数
 		"random子模块：random、permutation，normal，rand、multivariate_normal等"   从某种分布抽取元素，创建数组
-		#数组连接操作
+		#数组连接/拼接操作
 			arr1= np.array([[11,12],[32,42]], float)
 			arr2= np.array([[54,26],[27,28]], float)
 			arr = np.concatenate((arr1, arr2)) #默认按第一维度连接
@@ -248,12 +354,23 @@
 		matrix[1,:] #只有:表本维度所有
 		matrix[:,2]
 		matrix[-1:, -2:] #-2表从本维度倒数第二个元素开始往后数
+		'''矩阵运算begin'''
+			B = A*C  #矩阵对应元素相乘,要求A C同型
+			B = np.multiply(A, C) # 同A*C
+			B = np.dot(A, C)	#矩阵乘法, 要求A的列数等于C的行数
+			B = A.I  #矩阵求逆
+		'''矩阵运算end'''
 	</numpy>
-	<python, 字符串操作>
+	<python, 文件操作>
 		文件移动剪切
 		import os,shutil
 		shutil.move(src,dst)
-
+	</python,文件操作>
+	<python, 字符串操作>
+		#字符串和整数，浮点型互相转换
+		int(str)	#字符串转整型 
+		float(str)	#字符串转浮点数 
+		str(num)	#数字转字符串 
 		字符串两端去空格或指定字符
 		str.strip()
 		str.lstrip()

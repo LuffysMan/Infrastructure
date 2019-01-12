@@ -1,5 +1,11 @@
 '''''''''''''''''''<XXX begin>'''''''''''''''''''''
-'''''''''''''''''''<XXX begin>'''''''''''''''''''''
+'''''''''''''''''''<XXX end>'''''''''''''''''''''
+'''''''''''''''''''<打印函数 begin>'''''''''''''''''''''
+import datetime
+def myPrint(content):
+	strTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+	print(strTime+"->"+content)
+'''''''''''''''''''<打印函数 end>'''''''''''''''''''''
 
 '''''''''''''''''''<写文件begin>'''''''''''''''''''''
 #encoding=utf-8
@@ -40,8 +46,7 @@ def data_write(file_path, datas):
     f.save(file_path) #保存文件
 '''''''''''''''''''<写文件end>'''''''''''''''''''''
 
-
-''''''''''''''''''''''''<读文件begin>''''''''''''''''''''
+'''''''''''''''''''<读文件begin>'''''''''''''''''''''
 import random
 import struct
 import numpy as np
