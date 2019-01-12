@@ -96,7 +96,7 @@ double getSpecificTime()
 	double time;
 	QueryPerformanceFrequency(&nFreq);
 	QueryPerformanceCounter(&nBeginTime);
-	Sleep(1000);
+	Sleep(1000);				//在此处写入需要测量的代码块
 	QueryPerformanceCounter(&nEndTime);
 	time = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
 	return time;
@@ -257,4 +257,50 @@ int GetWorkDirWinAPI()
     printf("kernel32模块路径 %s \n",szMoudlePath);
 
     return 0;
+}
+
+int serialize(Mat src, char* filename)
+{
+	int nTmp = 0;
+	uchar cTmp = 0;
+	Vec3b vecTmp = Vec3b(0, 0, 0);
+	if (-1 == remove(filename));
+	ofstream ofs(filename, ios::out | ios::binary);//打开文件，以out|binary方式输出
+	if (!ofs)
+	{
+		cout << "打开文件失败" << endl;
+	}
+	else
+	{
+		nTmp = src.rows;
+		ofs.write((char*)&nTmp, sizeof(int));
+		nTmp = src.cols;
+		ofs.write((char*)&nTmp, sizeof(int));
+		ofs.write((char*)src.data, sizeof(Vec3b)*src.rows*src.cols);
+	}
+	ofs.close();//关闭文件
+	return 0;
+}
+int deserialize(Mat& dst, char* filename)
+{
+	int nTmp = 0;
+	uchar cTmp = 0;
+	Vec3b vecTmp = Vec3b(0, 0, 0);
+	ifstream ifs(filename, ios::in|ios::binary);
+	if (!ifs)
+	{
+		cout << "打开文件失败" << endl;
+	}
+	else
+	{
+		ifs.read((char*)&nTmp, sizeof(int));
+		dst.rows = nTmp;
+		ifs.read((char*)&nTmp, sizeof(int));
+		dst.cols = nTmp;
+		ifs.read((char*)dst.data, sizeof(Vec3b)*dst.rows*dst.cols);
+		//ifs >> vecTmp[2];
+		//dst.ptr<Vec3b>(i)[j] = vecTmp;
+	}
+	ifs.close();//关闭文件
+	return 0;
 }

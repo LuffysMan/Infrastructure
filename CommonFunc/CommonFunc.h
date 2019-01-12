@@ -19,8 +19,10 @@ double getSpecificTime();
 cv::Mat TransBufferToMat(unsigned char* pBuffer, int nWidth, int nHeight, int nBandNum, int nBPB = 1);
 int TransMatToBuffer(cv::Mat mSrc, unsigned char*& ppBuffer, int& nWidth, int& nHeight, int& nBandNum, int& nBPB, size_t& nMemSize);
 
-
-
+//序列化一幅图像到dat文件
+//#include<fstream>
+int serialize(Mat src, char* filename);
+int deserialize(Mat& dst, char* filename);
 
 
 
