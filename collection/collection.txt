@@ -251,6 +251,7 @@
 		conda update package_name/--all	#update specified package
 		conda search term				#fuzzy search without specific name
 		ubuntu16.04启动Anaconda Navigator 图形化界面：anaconda-navigator
+		conda update -n base -c defaults conda #更新anaconda版本
 	</normal>
 	<environment>
 		<create env>
