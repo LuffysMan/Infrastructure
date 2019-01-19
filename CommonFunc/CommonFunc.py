@@ -5,6 +5,9 @@ import datetime
 def myPrint(content):
 	strTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 	print(strTime+"->"+content)
+def getTime():
+    strTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return strTime
 '''''''''''''''''''<打印函数 end>'''''''''''''''''''''
 
 '''''''''''''''''''<写文件begin>'''''''''''''''''''''
